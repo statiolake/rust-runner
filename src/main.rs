@@ -54,18 +54,6 @@ impl Options {
     }
 }
 
-fn parse_imports(content: &str) -> HashSet<String> {
-    let mut set = HashSet::new();
-    for line in content.lines() {
-        if let Some(captures) = RE_USE.captures(line) {
-            set.insert(captures.name("crate").unwrap().as_str().into());
-        }
-    }
-
-    set.remove("std");
-    set
-}
-
 fn main() -> Fallible<()> {
     // 引数をパースする。
     let opts = Options::parse_args()?;
@@ -119,6 +107,18 @@ fn init_project(content: &str, imports: &HashSet<String>) -> Fallible<()> {
     }
 
     Ok(())
+}
+
+fn parse_imports(content: &str) -> HashSet<String> {
+    let mut set = HashSet::new();
+    for line in content.lines() {
+        if let Some(captures) = RE_USE.captures(line) {
+            set.insert(captures.name("crate").unwrap().as_str().into());
+        }
+    }
+
+    set.remove("std");
+    set
 }
 
 fn run_project() -> Fallible<()> {
