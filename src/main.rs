@@ -182,6 +182,20 @@ fn init_project(content: &str, context: &Context) -> Fallible<()> {
         bail!("failed to init cargo project.");
     }
 
+    // sccache が使える場合は sccache を有効にする
+    if let Ok(sccache) = which::which("sccache") {
+        fs::create_dir_all(".cargo")?;
+        let mut s = Vec::new();
+        writeln!(s, r#"[build]"#).unwrap();
+        writeln!(
+            s,
+            r#"rustc-wrapper = "{}""#,
+            sccache.display().to_string().escape_default()
+        )
+        .unwrap();
+        fs::write(".cargo/config", s)?;
+    }
+
     // ソースファイルを置き換える
     fs::remove_file("src/main.rs")?;
     let mut f = File::create("src/main.rs")?;
