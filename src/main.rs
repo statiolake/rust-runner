@@ -141,7 +141,10 @@ impl Context {
             }
         }
 
-        set.remove("std");
+        for special in &["std", "crate", "self", "super"] {
+            set.remove(*special);
+        }
+
         set
     }
 }
